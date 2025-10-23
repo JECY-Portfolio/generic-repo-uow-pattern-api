@@ -2,6 +2,7 @@
 {
     public interface IUnitOfWork : IDisposable
     {
+        public IProductRepository ProductRepository { get; }
         IRepository<T> GetRepository<T>() where T : class;
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

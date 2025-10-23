@@ -22,6 +22,15 @@ namespace generic_repo_pattern_api.Controllers
             var result = await _unitOfWork.GetRepository<Product>().GetAllAsync();
             return Ok(result);
         }
+
+        [HttpGet("productbyname")]
+        public async Task<IActionResult> GetByName(string productName)
+        {
+            var product = await _unitOfWork.ProductRepository.GetProductsbyName(productName);
+
+            return Ok(product);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(ProductRequest product)
         {

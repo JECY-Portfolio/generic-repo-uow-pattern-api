@@ -6,7 +6,7 @@ namespace generic_repo_pattern_api.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
         private readonly MyDbContext _myDbContext;
 
 
