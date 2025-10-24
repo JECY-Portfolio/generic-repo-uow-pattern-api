@@ -19,6 +19,7 @@ namespace generic_repo_pattern_api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+            var productRepository = _unitOfWork.GetRepository<IProductRepository, Product>();
             var result = await _unitOfWork.GetRepository<Product>().GetAllAsync();
             return Ok(result);
         }
@@ -26,6 +27,7 @@ namespace generic_repo_pattern_api.Controllers
         [HttpGet("productbyname")]
         public async Task<IActionResult> GetByName(string productName)
         {
+            var productRepository = _unitOfWork.GetRepository<IProductRepository, Product>();
             var product = await _unitOfWork.ProductRepository.GetProductsbyName(productName);
 
             return Ok(product);
@@ -33,7 +35,7 @@ namespace generic_repo_pattern_api.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Post(ProductRequest product)
-        {
+         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
@@ -43,6 +45,7 @@ namespace generic_repo_pattern_api.Controllers
                     Price = product.Price,
                     ProductName = product.ProductName 
                 };
+                var productRepository = _unitOfWork.GetRepository<IProductRepository, Product>(); 
                 var createdProduct = await _unitOfWork.GetRepository<Product>().AddAsync(productEntity);
                 await _unitOfWork.SaveChangesAsync();
 
