@@ -1,4 +1,5 @@
-﻿using generic_repo_pattern_api.Data;
+﻿using generic_repo_pattern_api.Common;
+using generic_repo_pattern_api.Data;
 using generic_repo_pattern_api.Entity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,21 @@ namespace generic_repo_pattern_api.Repository
     {
         public ProductRepository(MyDbContext myDbContext) : base(myDbContext)
         {
+        }
+
+        public async Task<PaginatedList<Product>> GetAllProductsWithPagging(int page, int pageSize, string searchTerm)
+        {
+            IQueryable<Product> query = _dbSet
+                        .Include(p => p.Orders); // Include orders in the query 
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(p => EF.Functions.Like(p.ProductName, $"%{searchTerm}%"));
+            }
+
+            var Result = await PaginatedList<Product>.
+                ToPagedList(query.OrderBy(x => x.ProductId), page, pageSize);
+            return Result;
         }
 
         public async Task<IEnumerable<Product>> GetProductsbyName(string productname)
