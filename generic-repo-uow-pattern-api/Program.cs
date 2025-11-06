@@ -1,5 +1,7 @@
+using AutoMapper;
 using generic_repo_pattern_api.CustomHealthCheck;
 using generic_repo_pattern_api.Data;
+using generic_repo_pattern_api.MapperProfile;
 using generic_repo_pattern_api.Repository;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -11,6 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddHttpClient();
+
+var mapperConfiguration = new MapperConfiguration(cgf =>
+{
+    cgf.AddProfile(typeof(YourMappingProfile));
+});
+
+var mapper = mapperConfiguration.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
 
 builder.Services.AddDbContext<MyDbContext>(options =>
 {

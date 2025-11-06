@@ -1,4 +1,5 @@
-﻿using generic_repo_pattern_api.Entity;
+﻿using AutoMapper;
+using generic_repo_pattern_api.Entity;
 using generic_repo_pattern_api.Repository;
 using generic_repo_pattern_api.ViewModel;
 using Microsoft.AspNetCore.Http;
@@ -11,15 +12,25 @@ namespace generic_repo_pattern_api.Controllers
     public class ProductWithGenericRepoController : ControllerBase
     {
         private readonly IRepository<Product> _productRepository;
-        public ProductWithGenericRepoController(IRepository<Product> productRepository)
+        private readonly IMapper _mapper;
+        public ProductWithGenericRepoController(IRepository<Product> productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _productRepository.GetAllAsync();
+            return Ok(products);
+        }
+
+        [HttpGet("ProductsWithPagging")]
+        public async Task<IActionResult> ProductsWithPagging(int page = 1, int pageSize = 10, string searchTerm = null)
+        {
+            var products = await _productRepository.GetAllAsync();
+            var prudctdto = _mapper.Map<List<ProductRequest>>(products);
             return Ok(products);
         }
 
@@ -31,17 +42,19 @@ namespace generic_repo_pattern_api.Controllers
             {
                 return NotFound();
             }
-            return Ok(product);
+            var productDto = _mapper.Map<ProductRequest>(product);
+            return Ok(productDto);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] ProductRequest product)
         {
-            var newProduct = new Product
-            {
-                ProductName = product.ProductName,
-                Price = product.Price
-            };
+            //var newProduct = new Product
+            //{
+            //    ProductName = product.ProductName,
+            //    Price = product.Price
+            //};
+            var newProduct = _mapper.Map<Product>(product);
             var createdProduct = await _productRepository.AddAsync(newProduct);
             return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.ProductId }, createdProduct);
         }
@@ -54,8 +67,9 @@ namespace generic_repo_pattern_api.Controllers
             {
                 return NotFound();
             }
-            existingProduct.ProductName = product.ProductName;
-            existingProduct.Price = product.Price;
+            //existingProduct.ProductName = product.ProductName;
+            //existingProduct.Price = product.Price;
+            _mapper.Map(product, existingProduct);
             await _productRepository.UpdateAsync(existingProduct);
             return NoContent();
         }
