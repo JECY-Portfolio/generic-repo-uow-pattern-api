@@ -1,5 +1,6 @@
 ﻿using generic_repo_pattern_api.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace generic_repo_pattern_api.Repository
 {
@@ -11,5 +12,21 @@ namespace generic_repo_pattern_api.Repository
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
         void SetDbContext(MyDbContext dbContext);
+        Task AddRangeAsync(IEnumerable<T> entities);
+
+        Task<T> FindAsync(Expression<Func<T, bool>> match);
+        Task<ICollection<T>> FindAllAsync(Expression<Func<T, bool>> match);
+        Task<int> CountAsync(Expression<Func<T, bool>> predicate = null);
+        Task<(ICollection<T> Result, int TotalNumber, int TotalPages,
+            bool IsPrevious, bool IsNext)> SearchOrderAndPaginateAsync(
+      Expression<Func<T, bool>> searchPredicate = null,
+      Expression<Func<T, object>> orderBy = null,
+      bool isDescending = false,
+      int? pageNumber = null,
+      int? pageSize = null,
+      params Expression<Func<T, object>>[] includeProperties);
+
+
+
     }
 }

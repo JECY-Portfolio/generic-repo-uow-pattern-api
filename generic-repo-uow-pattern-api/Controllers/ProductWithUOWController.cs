@@ -80,7 +80,7 @@ namespace generic_repo_pattern_api.Controllers
 
                 return StatusCode((int)HttpStatusCode.Created, new { Id = createdProduct.ProductId });
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 await _unitOfWork.RollbackAsync();
                 throw;
