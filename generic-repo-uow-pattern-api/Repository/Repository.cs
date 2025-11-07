@@ -116,5 +116,20 @@ namespace generic_repo_pattern_api.Repository
             await _myDbContext.SaveChangesAsync();
 
         }
+
+        public async Task<IEnumerable<T>> GetAllAsync(ISpecification<T> specification = null)
+        {
+            return ApplySpecificationforList(specification);
+        }
+
+        public async Task<T> FindAsync(ISpecification<T> specification = null)
+        {
+            return await ApplySpecificationforList(specification).FirstOrDefaultAsync();
+        }
+
+        private IQueryable<T> ApplySpecificationforList(ISpecification<T> spec)
+        {
+            return SpecificationEvaluator<T>.GetQuery(_dbSet.AsQueryable(), spec);
+        }
     }
 }
