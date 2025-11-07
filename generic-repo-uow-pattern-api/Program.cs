@@ -1,6 +1,7 @@
 using AutoMapper;
 using generic_repo_pattern_api.CustomHealthCheck;
 using generic_repo_pattern_api.Data;
+using generic_repo_pattern_api.Exception;
 using generic_repo_pattern_api.MapperProfile;
 using generic_repo_pattern_api.Repository;
 using HealthChecks.UI.Client;
@@ -9,6 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+builder.Services.AddExceptionHandler<TimeOutException>();
+
+builder.Services.AddExceptionHandler<DefaultException>();
+
 
 // Add services to the container.
 
@@ -51,6 +59,8 @@ builder.Services
     .AddInMemoryStorage(); 
 
 var app = builder.Build();
+
+app.UseExceptionHandler(opt => { });
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
